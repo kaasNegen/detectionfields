@@ -1,4 +1,4 @@
-import gydar
+from gyroLidar.gydar import *
 
 
 class DetectionFields(object):
@@ -11,4 +11,4 @@ class DetectionFields(object):
     latest_output = None
 
     def __init__(self):
-        self._gydar = gydar.Gydar
+        self._gydar = Gydar()
