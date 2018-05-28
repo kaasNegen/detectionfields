@@ -17,6 +17,9 @@ class DetectionFields(object):
 
     def start_updating(self):
         self.thread_is_active = True
+
+        self._gydar.connect()
+
         self._gydar_thread = Thread(target=gydar_loop, args=(self._gydar, self))
         self._gydar_thread.start()
 
@@ -56,12 +59,13 @@ def gydar_loop(gydar: Gydar, fields: DetectionFields):
 
         index = 0
         for field in lidar_data:
-            field.sort(reverse=True)
-            average = sum(field) / len(field)
-            closest = field[0]
-
-            fields.latest_output[index] = (average, closest)
-
+            try:
+                field.sort(reverse=True)
+                average = sum(field) / len(field)
+                closest = field[0]
+                fields.latest_output[index] = (average, closest)
+            except TypeError:
+                pass
             index += 1
 
 
