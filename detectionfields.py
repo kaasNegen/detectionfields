@@ -2,7 +2,7 @@ from gyroLidar.gydar import *
 
 
 class DetectionFields(object):
-    amount_of_fields = 6
+    amount_of_fields = 7
     degrees_front = 0
     fov = 180
 
@@ -28,9 +28,11 @@ class DetectionFields(object):
 
 
 def gydar_loop(gydar: Gydar, fields: DetectionFields):
-    start = round(fields.degrees_front - fields.fov / 2)
-    end = round(fields.degrees_front + fields.fov / 2)
     middle = fields.degrees_front
+
+    start = round(middle - fields.fov / 2)
+    end = round(middle + fields.fov / 2)
+
     data_length = len(gydar.raw_lidar_output)
 
     if start < 0:
@@ -40,7 +42,9 @@ def gydar_loop(gydar: Gydar, fields: DetectionFields):
         end = end % data_length
 
     while fields.thread_is_active:
+        # for the time being no ping sensor data in there.
         gyro_data = gydar.raw_gyro_output
+
         lidar_data = gydar.raw_lidar_output
 
         if start > end:
@@ -50,13 +54,15 @@ def gydar_loop(gydar: Gydar, fields: DetectionFields):
 
         lidar_data = chunk_list(lidar_data, fields.amount_of_fields)
 
+        index = 0
         for field in lidar_data:
             field.sort(reverse=True)
             average = sum(field) / len(field)
-            for distance in field:
-                if distance / average < 0.75:
-                    print('Something is closer than average', average, distance)
-                    # TODO: Fill array from @fields.
+            closest = field[0]
+
+            fields.latest_output[index] = (average, closest)
+
+            index += 1
 
 
 def chunk_list(seq, num):
