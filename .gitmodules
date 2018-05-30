@@ -1,3 +1,6 @@
 [submodule "gyroLidar"]
 	path = gyroLidar
 	url = https://github.com/kaasNegen/gyroLidar
+[submodule "Haptic"]
+	path = Haptic
+	url = https://github.com/kaasNegen/Haptic.git
